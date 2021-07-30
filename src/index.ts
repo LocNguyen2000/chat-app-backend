@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import userRoutes from './routes/user' 
+
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -7,7 +9,6 @@ const port = process.env.PORT || 4000;
 // Connect to Postgres DB
 
 
-const userRoutes = require("./routes/user");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

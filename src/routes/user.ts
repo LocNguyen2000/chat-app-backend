@@ -1,12 +1,8 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import { getAllUser } from '../controllers/user.controller'
+
 const router = express.Router();
 
-router.get('/', (req: Request, res: Response) => {
-    res.status(201).send({
-        message: 'User data.'
-    })
-})
+router.get('/', getAllUser)
 
-
-
-module.exports = router ;
+export default router ;
