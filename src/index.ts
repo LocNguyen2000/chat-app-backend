@@ -1,14 +1,10 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import userRoutes from './routes/user' 
-
+import config from "./config";
 
 const app = express();
-const port = process.env.PORT || 4000;
-
-// Connect to Postgres DB
-
-
+const port = config.port;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
