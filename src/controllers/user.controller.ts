@@ -51,10 +51,7 @@ export const registerUser = async (
       encryptedPass,
     ]);
 
-    // return a jwt token for authentication.
-    const token = jwtGenerate(newUser.rows[0])
-
-    res.status(200).json(token);
+    res.status(200).json("Register successfull");
   } catch (error) {
     res.status(500).json("Server error: " + error.message);
   }
@@ -81,10 +78,10 @@ export const loginUser = async (
 
     if (!validPass) return res.status(409).json('Incorrect password')
 
-    // return a jwt token for authorization
-    const token = jwtGenerate(userData.rows[0]);
+    // return a json token response
+    const jwtToken = jwtGenerate(userData.rows[0])
 
-    res.status(200).json(token);
+    res.status(200).json({ token: jwtToken});
     
   } catch (error) {
     res.status(500).json("Server error: " + error.message );
