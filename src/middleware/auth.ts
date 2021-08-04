@@ -19,7 +19,7 @@ export const veriryToken = async (
 
     next(payload)
   } catch (error) {
-    res.status(401).send("Invalid Token");
+    console.log(error);
+    return res.status(401).send("Invalid Token");
   }
-  next();
 };

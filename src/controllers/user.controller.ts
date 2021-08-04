@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { pool } from "../database";
 import { QueryResult } from "pg";
-import bcrypt from "bcrypt";
-import { jwtGenerate } from "../utils/jwtGenerator";
+import { jwtGenerate, comparePassword, encryptPassword } from "../utils/security";
 
 export const getAllUser = async (
   req: Request,
@@ -29,18 +28,14 @@ export const registerUser = async (
     const { name, email, password } = req.body;
 
     // check for if user exist
-    const findUserQuery = "SELECT * FROM users WHERE email = $1";
-    const userData: QueryResult = await pool.query(findUserQuery, [email]);
+    const query = "SELECT * FROM users WHERE email = $1";
+    const userData: QueryResult = await pool.query(query, [email]);
 
     if (userData.rowCount !== 0) {
-      return res.status(401).json("Data user already exist");
+      return res.status(401).json({ message: "Data user already exist" });
     }
-    // generate sault for bcrypt randomness
-    const saultRound = 10;
-    const sault = await bcrypt.genSalt(saultRound);
-
-    // encrypt pass with bcrypt
-    const encryptedPass = await bcrypt.hash(password, sault);
+    
+    const encryptedPass = await encryptPassword(password)
 
     // insert new user to database server
     const addUserQuery =
@@ -51,9 +46,10 @@ export const registerUser = async (
       encryptedPass,
     ]);
 
-    res.status(200).json("Register successfull");
+    return res.status(200).json({ message: "Register successful" });
   } catch (error) {
-    res.status(500).json("Server error: " + error.message);
+    console.log(error);
+    return res.status(500).json({message: "Server error: " + error.message});
   }
 };
 
@@ -67,23 +63,23 @@ export const loginUser = async (
     const { email, password } = req.body
 
     // query in database server
-    const findUserQuery = "SELECT * FROM users WHERE email = $1";
-    const userData: QueryResult = await pool.query(findUserQuery, [email]);
+    const query = "SELECT * FROM users WHERE email = $1";
+    const userData: QueryResult = await pool.query(query, [email]);
 
-    if (userData.rowCount === 0) return res.status(400).json('Invalid email')
+    if (userData.rowCount === 0) return res.status(400).json('Email does not exist')
 
     // check password
-    const validPass = await bcrypt.compare(password, userData.rows[0].password)
-    console.log(validPass);
+    const validPass = await comparePassword(password, userData.rows[0])
 
     if (!validPass) return res.status(409).json('Incorrect password')
 
     // return a json token response
     const jwtToken = jwtGenerate(userData.rows[0])
 
-    res.status(200).json({ token: jwtToken});
+    return res.status(200).json({ data: jwtToken});
     
   } catch (error) {
-    res.status(500).json("Server error: " + error.message );
+    console.log(error);
+    return res.status(500).json("Server error: " + error.message );
   }
 };
