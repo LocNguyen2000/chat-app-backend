@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { pool } from "../database";
 import { QueryResult } from "pg";
 import { jwtGenerate, comparePassword, encryptPassword } from "../utils/security";
+import { loginInterface, registerInterface } from "../types/user";
 
 export const getAllUser = async (
   req: Request,
@@ -25,7 +26,7 @@ export const registerUser = async (
 ) => {
   try {
     // body request
-    const { name, email, password } = req.body;
+    const { name, email, password } : registerInterface = req.body;
 
     // check for if user exist
     const query = "SELECT * FROM users WHERE email = $1";
@@ -60,7 +61,7 @@ export const loginUser = async (
 ) => {
   try {
     // request body
-    const { email, password } = req.body
+    const { email, password } : loginInterface = req.body
 
     // query in database server
     const query = "SELECT * FROM users WHERE email = $1";

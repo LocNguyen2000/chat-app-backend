@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { pool } from "../database";
 import { QueryResult } from "pg";
-import { messageInterface } from "../types/chat";
+import { addConversationAdapter, messageInterface, updateConversationMsgAdapter } from "../types/chat";
 
 export const getConversationsByEmail = async (
   req: Request,
@@ -19,9 +19,7 @@ export const getConversationsByEmail = async (
         .status(400)
         .json({ message: "User haven't created conversations" });
 
-    console.log(conversationData.rows);
-
-    return res.status(200).json({ data: conversationData.rows });
+    return res.status(200).json(conversationData.rows);
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error: " + error.message });
@@ -34,7 +32,7 @@ export const addConversation = async (
   next: NextFunction
 ) => {
   try {
-    const { title, users } = req.body;
+    const { title, users }: addConversationAdapter = req.body;
 
     const query =
       "INSERT INTO conversations (title, users, messages ) VALUES ($1, $2, $3) RETURNING *";
@@ -43,8 +41,6 @@ export const addConversation = async (
       users,
       [],
     ]);
-
-    console.log(newConversation.rows);
 
     return res.status(200).json({ message: "Add new conversation successful" });
   } catch (error) {
@@ -58,5 +54,27 @@ export const updateMessageInConversation = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { content, users, createdAt } = req.body;
+  try {
+    const { id, content, user, createdAt }: updateConversationMsgAdapter = req.body;
+
+    // Find messages in conversation from id
+    const query = "SELECT messages FROM conversations WHERE id = $1";
+    const messageData: QueryResult = await pool.query(query, [id]);
+
+    if (messageData.rowCount === 0) return res.status(400).json({ message: "Cannot find conversation" })
+
+    // Update message in database
+    const data = messageData.rows[0]
+    data.messages.push({ content, user, createdAt });
+
+    const updateQuery = " UPDATE conversations SET messages = $1 WHERE id = $2 RETURNING *"
+    const updateData: QueryResult = await pool.query(updateQuery, [data.messages, id])
+
+    // return response with updated messages
+    return res.status(200).json(updateData.rows[0])
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error: " + error.message })
+  }
 };

@@ -5,13 +5,13 @@ export interface userInterface {
     password: string
 };
 
-export interface registerInfo {
+export interface registerInterface {
     name: string,
     email: string,
     password: string
 };
 
-export interface loginInfo {
+export interface loginInterface {
     email: string,
     password: string
 };

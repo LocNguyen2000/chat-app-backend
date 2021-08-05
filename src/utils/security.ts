@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import { userInterface } from '../types/userInfo';
+import { userInterface } from '../types/user';
 import bcrypt from "bcrypt";
 
 export const jwtGenerate = (userInfo: userInterface) => {
