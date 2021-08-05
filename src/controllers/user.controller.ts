@@ -33,7 +33,7 @@ export const registerUser = async (
     const userData: QueryResult = await pool.query(query, [email]);
 
     if (userData.rowCount !== 0) {
-      return res.status(401).json({ message: "Data user already exist" });
+      return res.status(401).json("Data user already exist");
     }
     
     const encryptedPass = await encryptPassword(password)
@@ -47,10 +47,10 @@ export const registerUser = async (
       encryptedPass,
     ]);
 
-    return res.status(200).json({ message: "Register successful" });
+    return res.status(200).json("Register successful");
   } catch (error) {
     console.log(error);
-    return res.status(500).json({message: "Server error: " + error.message});
+    return res.status(500).json("Server error: " + error.message);
   }
 };
 
@@ -77,7 +77,7 @@ export const loginUser = async (
     // return a json token response
     const jwtToken = jwtGenerate(userData.rows[0])
 
-    return res.status(200).json({ data: jwtToken});
+    return res.status(200).json(jwtToken);
     
   } catch (error) {
     console.log(error);

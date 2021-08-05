@@ -17,12 +17,12 @@ export const getConversationsByEmail = async (
     if (conversationData.rowCount === 0)
       return res
         .status(400)
-        .json({ message: "User haven't created conversations" });
+        .json("User haven't created conversations");
 
     return res.status(200).json(conversationData.rows);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Server error: " + error.message });
+    return res.status(500).json("Server error: " + error.message );
   }
 };
 
@@ -42,10 +42,10 @@ export const addConversation = async (
       [],
     ]);
 
-    return res.status(200).json({ message: "Add new conversation successful" });
+    return res.status(200).json("Add new conversation successful" );
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Server error: " + error.message });
+    return res.status(500).json("Server error: " + error.message );
   }
 };
 
@@ -61,7 +61,7 @@ export const updateMessageInConversation = async (
     const query = "SELECT messages FROM conversations WHERE id = $1";
     const messageData: QueryResult = await pool.query(query, [id]);
 
-    if (messageData.rowCount === 0) return res.status(400).json({ message: "Cannot find conversation" })
+    if (messageData.rowCount === 0) return res.status(400).json("Cannot find conversation")
 
     // Update message in database
     const data = messageData.rows[0]
@@ -75,6 +75,6 @@ export const updateMessageInConversation = async (
 
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "Server error: " + error.message })
+    return res.status(500).json( "Server error: " + error.message )
   }
 };
