@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
-import { userInterface } from '../types/user';
+import { userInterface } from '../types/userAdapter';
 import bcrypt from "bcrypt";
 
 export const jwtGenerate = (userInfo: userInterface) => {
     const payload = {
         data: userInfo,
     }
-    return jwt.sign(payload, config.secretKey as string, {expiresIn: "1h"} );
+    return jwt.sign(payload, config.secretKey as string, {expiresIn: 3600} );
 }
 
 export const comparePassword = async (loginPass: string, userInfo: userInterface ) => {

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { pool } from "../database";
 import { QueryResult } from "pg";
 import { jwtGenerate, comparePassword, encryptPassword } from "../utils/security";
-import { loginInterface, registerInterface } from "../types/user";
+import { loginInterface, registerInterface } from "../types/userAdapter";
 
 export const getAllUser = async (
   req: Request,
@@ -33,7 +33,7 @@ export const registerUser = async (
     const userData: QueryResult = await pool.query(query, [email]);
 
     if (userData.rowCount !== 0) {
-      return res.status(401).json("Data user already exist");
+      return res.status(401).json("Account already exist");
     }
     
     const encryptedPass = await encryptPassword(password)
@@ -67,7 +67,7 @@ export const loginUser = async (
     const query = "SELECT * FROM users WHERE email = $1";
     const userData: QueryResult = await pool.query(query, [email]);
 
-    if (userData.rowCount === 0) return res.status(400).json('Email does not exist')
+    if (userData.rowCount === 0) return res.status(400).json('Account does not exist')
 
     // check password
     const validPass = await comparePassword(password, userData.rows[0])
@@ -77,7 +77,14 @@ export const loginUser = async (
     // return a json token response
     const jwtToken = jwtGenerate(userData.rows[0])
 
-    return res.status(200).json(jwtToken);
+    const data = {
+      id: userData.rows[0].id,
+      name: userData.rows[0].name,
+      email: userData.rows[0].email,
+      token: jwtToken
+    }
+
+    return res.status(200).json(data);
     
   } catch (error) {
     console.log(error);
