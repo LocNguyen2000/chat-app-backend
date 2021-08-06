@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { pool } from "../database";
+import { pool } from "../config/database";
 import { QueryResult } from "pg";
 import {
   addConversationAdapter,

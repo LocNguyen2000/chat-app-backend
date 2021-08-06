@@ -3,7 +3,7 @@ import { getConversationsByEmail, addConversation, updateMessageInConversation }
 
 const router = express.Router();
 
-router.get('/', getConversationsByEmail)
+router.post('/', getConversationsByEmail)
 router.post('/add', addConversation )
 router.post('/send', updateMessageInConversation)
 
