@@ -33,13 +33,20 @@ export const addConversation = async (
   next: NextFunction
 ) => {
   try {
-    const { title, users }: addConversationAdapter = req.body.data;
+    const { title, users }: addConversationAdapter = req.body;
+
+    // check if users exist in database
+    const getQuery = `SELECT * FROM users WHERE email = $1 OR email = $2`
+    const userData: QueryResult = await pool.query(getQuery, [users[0], users[1] ]);
+
+    if(userData.rowCount < 2) 
+      return res.status(400).json("User not exist in database")
 
     const query = `INSERT INTO conversations (title, users, messages ) 
           VALUES ($1, $2, $3) RETURNING *`;
-    await pool.query(query, [title, users, []]);
+    const newConversation: QueryResult = await pool.query(query, [title, users, []]);
 
-    return res.status(200).json("Add new conversation success");
+    return res.status(200).json(newConversation.rows[0]);
   } catch (error) {
     console.log(error);
     return res.status(500).json("Server error: " + error.message);
@@ -53,7 +60,7 @@ export const updateMessageInConversation = async (
 ) => {
   try {
     const { id, content, user, createdAt }: updateConversationMsgAdapter =
-      req.body.data;
+      req.body;
 
     // Find messages in conversation from id
     const query = "SELECT messages FROM conversations WHERE id = $1";
