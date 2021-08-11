@@ -1,23 +1,23 @@
-import { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken'
 
 export interface userInterface {
-    id: Number,
-    name: string,
-    email: string,
-    password: string
-};
+  id: number
+  name: string
+  email: string
+  password: string
+}
 
-export interface PayloadWithData extends JwtPayload{
-    data: userInterface
+export interface PayloadWithData extends JwtPayload {
+  data: userInterface
 }
 
 export interface registerInterface {
-    name: string,
-    email: string,
-    password: string
-};
+  name: string
+  email: string
+  password: string
+}
 
 export interface loginInterface {
-    email: string,
-    password: string
-};
+  email: string
+  password: string
+}
